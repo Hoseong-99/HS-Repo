@@ -1,0 +1,100 @@
+---
+- name: Setup for the Ansible's Environment
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Add "/etc/ansible/hosts"
+      blockinfile:
+        path: /etc/ansible/hosts
+        block: |
+          [Nodes]
+          192.168.0.[176:177]
+          192.168.0.[178:179]
+
+    # - name: Generate sshkey
+    #   become: yes
+    #   become_user: vagrant
+    #   shell: "{{ item }}"
+    #   with_items:
+    #     - "ssh-keyscan 192.168.0.176 >> ~/.ssh/known_hosts"
+    #     - "ssh-keyscan 192.168.0.177 >> ~/.ssh/known_hosts"
+    #     - "ssh-keyscan 192.168.0.178 >> ~/.ssh/known_hosts"
+    #     - "ssh-keyscan 192.168.0.179 >> ~/.ssh/known_hosts"
+
+# ##### Add for Window node #####
+#     - name: Install epel-release
+#       yum:
+#         name: epel-release
+#         state: present
+
+#     - name: Install pip
+#       yum:
+#         name: python-pip
+#         state: present
+
+#     - name: Install python3
+#       package:
+#         name: python3
+#         state: latest
+
+#     - name: Update pip
+#       become: yes
+#       shell: 'python3 -m pip install --upgrade pip'
+
+#     - name: change pip
+#       become: yes
+#       shell: 'python2.7 -m pip install --upgrade pip==20.3.4'
+
+#     - name: Install pywinrm
+#       pip:
+#         name: pywinrm
+#         state: present
+# ############################
+
+    # - name: Install sshpass for Authentication
+    #   yum:
+    #     name: sshpass
+    #     state: present
+
+    - name: Create vim env's directories & files
+      shell: "{{ item }}"
+      with_items:
+        - "mkdir -p /home/vagrant/.vim/autoload /home/vagrant/.vim/bundle"
+        - "touch /home/vagrant/.vimrc"
+        - "touch /home/vagrant/.bashrc"
+
+    - name: Install vim-enhanced
+      yum:
+        name: vim-enhanced
+        state: present
+
+    - name: Install git
+      yum:
+        name: git
+        state: present
+
+    - name: Download pathogen.vim
+      shell: "curl -fLo /home/vagrant/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim"
+
+    - name: Git clone vim-ansible-yaml
+      git:
+        repo: https://github.com/chase/vim-ansible-yaml.git
+        dest: /home/vagrant/.vim/bundle/vim-ansible-yaml
+
+    - name: Configure vimrc
+      lineinfile:
+        path: /home/vagrant/.vimrc
+        line: "{{ item }}"
+      with_items:
+        - "set number"
+        - "execute pathogen#infect()"
+        - "syntax on"
+
+    - name: Configure Bashrc
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: "{{ item }}"
+      with_items:
+        - "alias ans='ansible'"
+        - "alias anp='ansible-playbook'"

@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+#ssh key 생성
+sshpass -p vagrant ssh -T -o StrictHostKeyChecking=no vagrant@192.168.0.176
+sshpass -p vagrant ssh -T -o StrictHostKeyChecking=no vagrant@192.168.0.177
+sshpass -p vagrant ssh -T -o StrictHostKeyChecking=no vagrant@192.168.0.178
+sshpass -p vagrant ssh -T -o StrictHostKeyChecking=no vagrant@192.168.0.179
